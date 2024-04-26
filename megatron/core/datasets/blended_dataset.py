@@ -89,6 +89,8 @@ class BlendedDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Union[int, numpy.ndarray]]:
         dataset_id = self.dataset_index[idx]
         dataset_sample_id = self.dataset_sample_index[idx]
+        if dataset_sample_id > self.size - 1:
+            dataset_sample_id = self.size - 1
         return {
             "dataset_id": dataset_id,
             **self.datasets[dataset_id][dataset_sample_id],

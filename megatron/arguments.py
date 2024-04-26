@@ -978,7 +978,7 @@ def _add_learning_rate_args(parser):
                        'and initial warmup, the learing rate at each '
                        'iteration would be different.')
     group.add_argument('--lr-decay-style', type=str, default='linear',
-                       choices=['constant', 'linear', 'cosine', 'inverse-square-root'],
+                       choices=['constant', 'linear', 'cosine', 'inverse-square-root', 'wsd'],
                        help='Learning rate decay function.')
     group.add_argument('--lr-decay-iters', type=int, default=None,
                        help='number of iterations to decay learning rate over,'
@@ -1015,6 +1015,13 @@ def _add_learning_rate_args(parser):
                        '(learning rate, warmup iterations, minimum learning '
                        'rate, maximum number of iterations, and decay style '
                        'from checkpoint and ignore input arguments.')
+    group.add_argument('--wsd_decay_ratio', type=float, default=0.1,
+                       help='used in wsd, usewsd_decay_ratio only works when lr_stable_steps > 0')
+    group.add_argument('--wsd_half_life', type=int, default=-1,
+                       help='used in wsd, wsd_half_life == -1: use the default value(0.5 * (lr_decay_steps - lr_stable_steps) + 1)')
+    group.add_argument('--lr_stable_steps', type=int, default=-1,
+                       help='used in wsd, lr_stable_steps == -1: use the default value(lr_decay_steps / (1 + wsd_decay_ratio)))'
+                       'lr_stable_steps == -2: use the lr_decay_steps value, no decay stage')
 
     return parser
 
@@ -1052,6 +1059,8 @@ def _add_checkpointing_args(parser):
                        help="If '--load' is set, but checkpoint is not found "
                        "(e.g., path typo), then exit instead of random "
                        "initialization.")
+    group.add_argument('--overwrite-iteration', type=str, default=None,
+                       help='overwrite the iteration number to load, None means load from latest.')
 
     return parser
 

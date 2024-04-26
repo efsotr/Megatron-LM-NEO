@@ -9,6 +9,7 @@ from typing import Dict, Tuple, Union
 import numpy
 import torch
 
+from megatron import get_tokenizer
 from megatron.core.datasets.blended_megatron_dataset_config import BlendedMegatronDatasetConfig
 from megatron.core.datasets.indexed_dataset import MMapIndexedDataset
 from megatron.core.datasets.megatron_dataset import MegatronDataset
@@ -39,6 +40,8 @@ class GPTDatasetConfig(BlendedMegatronDatasetConfig):
     reset_attention_mask: bool = False
     eod_mask_loss: bool = False
     eod_id: int = 0
+    add_bos: bool = False
+    enable_shuffle: bool = True 
 
 
 class GPTDataset(MegatronDataset):
@@ -66,6 +69,10 @@ class GPTDataset(MegatronDataset):
         config: GPTDatasetConfig,
     ) -> None:
         super().__init__(indexed_dataset, indexed_indices, num_samples, index_split, config)
+        print(self.config)
+        tokenizer = get_tokenizer()
+        self.bos_id = tokenizer.bos
+        self.eod_id = tokenizer.eod
 
     def _finalize(self) -> None:
         """Abstract method implementation
@@ -187,6 +194,11 @@ class GPTDataset(MegatronDataset):
                     self.indexed_dataset.get(self.document_index[i], offset=offset, length=length)
                 )
 
+        if getattr(self.config, "add_bos"):
+            sample = sample_parts[0]
+            add_token = self.bos_id if sample[0] != self.bos_id else self.eod_id
+            sample_parts.insert(0, numpy.array([add_token], dtype=sample.dtype))
+
         return (
             numpy.array(numpy.concatenate(sample_parts), dtype=numpy.int64),
             numpy.array(document_ids, dtype=numpy.int64),
@@ -304,7 +316,7 @@ class GPTDataset(MegatronDataset):
             )
             t_beg = time.time()
             document_index = _build_document_index(
-                self.indexed_indices, num_epochs, numpy_random_state, separate_final_epoch
+                self.indexed_indices, num_epochs, numpy_random_state, separate_final_epoch, self.config.enable_shuffle
             )
             numpy.save(path_to_document_index, document_index, allow_pickle=True)
             t_end = time.time()
@@ -341,11 +353,11 @@ class GPTDataset(MegatronDataset):
             t_beg = time.time()
             if separate_final_epoch:
                 shuffle_index = _build_shuffle_index(
-                    num_samples_sans_final_epoch, sample_index.shape[0] - 1, numpy_random_state
+                    num_samples_sans_final_epoch, sample_index.shape[0] - 1, numpy_random_state, True
                 )
             else:
                 shuffle_index = _build_shuffle_index(
-                    sample_index.shape[0] - 1, sample_index.shape[0] - 1, numpy_random_state
+                    sample_index.shape[0] - 1, sample_index.shape[0] - 1, numpy_random_state, True
                 )
             numpy.save(path_to_shuffle_index, shuffle_index, allow_pickle=True)
             t_end = time.time()
@@ -431,6 +443,7 @@ def _build_document_index(
     num_epochs: int,
     numpy_random_state: numpy.random.RandomState,
     separate_final_epoch: bool,
+    enable_shuffle: bool = False,
 ) -> numpy.ndarray:
     """Build an array with length = num epochs * num documents
 
@@ -443,6 +456,8 @@ def _build_document_index(
 
         separate_final_epoch (bool): Whether to exclude the last epoch from the global shuffle
 
+        enable_shuffle (bool): Whether to enable the shuffle. Default is False to ensure the reproducibility
+
     Returns:
         numpy.ndarray: The document index
 
@@ -453,16 +468,21 @@ def _build_document_index(
         document_index[:] = documents
         document_index = document_index.reshape(-1)
         document_index = document_index.astype(numpy.int32)
-        numpy_random_state.shuffle(document_index)
+        if enable_shuffle:
+            print("INFO: document_index shuffle is enabled...")
+            numpy_random_state.shuffle(document_index)
+        else:
+            print("INFO: document_index shuffle is disabled...")
         return document_index
 
-    doc_idx_first = _build_document_index(documents, num_epochs - 1, numpy_random_state, False)
-    doc_idx_last = _build_document_index(documents, 1, numpy_random_state, False)
+    doc_idx_first = _build_document_index(documents, num_epochs - 1, numpy_random_state, False, enable_shuffle)
+    doc_idx_last = _build_document_index(documents, 1, numpy_random_state, False, enable_shuffle)
     return numpy.concatenate((doc_idx_first, doc_idx_last))
 
 
 def _build_shuffle_index(
-    num_samples: int, total_size: int, numpy_random_state: numpy.random.RandomState
+    num_samples: int, total_size: int, numpy_random_state: numpy.random.RandomState,
+    enable_shuffle: bool = False,
 ) -> numpy.ndarray:
     """Build the range [0, size) and shuffle
 
@@ -485,12 +505,20 @@ def _build_shuffle_index(
         dtype_ = numpy.int64
 
     shuffle_idx_first = numpy.arange(start=0, stop=num_samples, step=1, dtype=dtype_)
-    numpy_random_state.shuffle(shuffle_idx_first)
+    if enable_shuffle:
+        print("INFO: shuffle_index shuffle is enabled...")
+        numpy_random_state.shuffle(shuffle_idx_first)
+    else:
+        print("INFO: shuffle_index shuffle is disabled...")
     if num_samples == total_size:
         return shuffle_idx_first
 
     shuffle_idx_last = numpy.arange(start=num_samples, stop=total_size, step=1, dtype=dtype_)
-    numpy_random_state.shuffle(shuffle_idx_last)
+    if enable_shuffle:
+        print("INFO: shuffle_index shuffle is enabled...")
+        numpy_random_state.shuffle(shuffle_idx_last)
+    else:
+        print("INFO: shuffle_index shuffle is disabled...")
 
     return numpy.concatenate((shuffle_idx_first, shuffle_idx_last))
 
@@ -545,7 +573,7 @@ def _get_ltor_masks_and_position_ids(
     if reset_position_ids or reset_attention_mask:
 
         # Find indecies where EOD token is.
-        eod_index = position_ids[data[b] == eod_token]
+        eod_index = position_ids[data == eod_token]
         # Detach indecies from positions if going to modify positions.
         if reset_position_ids:
             eod_index = eod_index.clone()

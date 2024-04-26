@@ -1,10 +1,9 @@
 # Copyright (c) 2023, NVIDIA CORPORATION. All rights reserved.
 
-import functools
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional,Tuple
 
 import torch
 
@@ -87,6 +86,21 @@ class BlendedMegatronDatasetConfig:
             split_vector = parse_and_normalize_split(self.split)
             self.split_matrix = convert_split_vector_to_split_matrix(split_vector)
             log_single_rank(logger, logging.INFO, f"Let split_matrix = {self.split_matrix}")
+
+
+@dataclass
+class GPTDatasetConfig(BlendedMegatronDatasetConfig):
+    """Configuration object for megatron-core blended and megatron GPT datasets
+
+    Attributes:
+        return_document_ids (bool): Whether to return the document ids when querying the dataset.
+    """
+
+    return_document_ids: bool = False
+
+    add_bos: bool = False
+
+    enable_shuffle: bool = False
 
 
 def parse_and_normalize_split(split: str) -> List[float]:

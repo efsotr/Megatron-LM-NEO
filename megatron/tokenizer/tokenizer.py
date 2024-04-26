@@ -49,6 +49,10 @@ def build_tokenizer(args):
     if getattr(args, "padded_vocab_size", None) is None:
         args.padded_vocab_size = _vocab_size_with_padding(tokenizer.vocab_size,
                                                           args)
+    
+    # Add original vocab size (if not already set from a checkpoint).
+    if getattr(args, "vocab_size", None) is None:
+        args.vocab_size = tokenizer.vocab_size
 
     return tokenizer
 

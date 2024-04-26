@@ -389,7 +389,10 @@ def get_optimizer_param_scheduler(optimizer):
         wd_incr_steps=wd_incr_steps,
         wd_incr_style=args.weight_decay_incr_style,
         use_checkpoint_opt_param_scheduler=args.use_checkpoint_opt_param_scheduler,
-        override_opt_param_scheduler=args.override_opt_param_scheduler)
+        override_opt_param_scheduler=args.override_opt_param_scheduler,
+        wsd_decay_ratio=args.wsd_decay_ratio,
+        wsd_half_life=args.wsd_half_life,
+        lr_stable_steps=args.lr_stable_steps)
 
     return opt_param_scheduler
 
@@ -527,7 +530,7 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
     for key in loss_dict:
         if not skipped_iter:
             total_loss_dict[key] = total_loss_dict.get(
-                key, torch.tensor([0.0], dtype=torch.float, device='cuda')) + loss_dict[key]
+                key, torch.cuda.FloatTensor([0.0])) + loss_dict[key]
         else:
             value = loss_dict[key].float().sum().item()
             is_nan = value == float('inf') or \
@@ -652,6 +655,45 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
         elapsed_time_per_iteration = elapsed_time / total_iterations
         throughput = num_floating_point_operations(args, batch_size) / (
             elapsed_time_per_iteration * 10**12 * args.world_size)
+        samples_per_second = batch_size / elapsed_time_per_iteration
+
+        if wandb_writer and is_last_rank():
+            # define our custom x axis metric
+            wandb_writer.define_metric("train/global_step")
+            wandb_writer.define_metric("train vs tokens/consumed_train_tokens")
+            # set all other train/ metrics to use this step
+            wandb_writer.define_metric(
+                "train/*", step_metric="train/global_step")
+            wandb_writer.define_metric(
+                "train vs tokens/*", step_metric="train vs tokens/consumed_train_tokens")
+            wandb_writer.define_metric(
+                "runtime/*", step_metric="train/global_step")
+
+            wandb_metrics = {
+                "runtime/iteration_time": elapsed_time_per_iteration,
+                "runtime/tflops_per_sec_per_gpu": throughput,
+                "runtime/tflops_per_sec": throughput * args.world_size,
+                "runtime/samples_per_sec_per_gpu": samples_per_second / args.world_size,
+                "runtime/tokens_per_sec_per_gpu": samples_per_second * args.seq_length / args.world_size,
+                "train/loss": loss_dict['lm loss'],
+                "train/learning_rate": learning_rate,
+                "train/global_step": iteration,
+                "train vs tokens/loss": loss_dict['lm loss'],
+                "train vs tokens/learning_rate": learning_rate,
+                "train vs tokens/consumed_train_tokens": args.consumed_train_samples * args.seq_length
+            }
+
+            if grad_norm is not None:
+                if isinstance(grad_norm, tuple):
+                    total_grad_norm, per_group_grad_norm = grad_norm
+                    for group, grad in per_group_grad_norm.items():
+                        wandb_metrics["train/group_grad_norm/" + group] = grad
+                else:
+                    total_grad_norm = grad_norm
+                wandb_metrics["train/total_grad_norm"] = total_grad_norm
+
+            wandb_writer.log(wandb_metrics)
+
         if args.log_timers_to_tensorboard:
             if writer:
                 writer.add_scalar('iteration-time',
@@ -681,7 +723,7 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
                       float(max(1, total_loss_dict[advanced_iters_key]))
                 if avg > 0.0:
                     log_string += ' {}: {:.6E} |'.format(key, avg)
-                total_loss_dict[key] = torch.tensor([0.0], dtype=torch.float, device='cuda')
+                total_loss_dict[key] = torch.cuda.FloatTensor([0.0])
         log_string += ' loss scale: {:.1f} |'.format(loss_scale)
         if grad_norm is not None:
             log_string += ' grad norm: {:.3f} |'.format(grad_norm)
@@ -794,6 +836,8 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
         num_microbatches = get_num_microbatches()
         update_num_microbatches(args.consumed_train_samples, consistency_check=True)
 
+
+        # update_num_microbatches(args.consumed_train_samples)
         args.curr_iteration = iteration
         loss_dict, skipped_iter, grad_norm, num_zeros_in_grad = \
             train_step(forward_step_func,

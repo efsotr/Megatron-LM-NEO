@@ -36,7 +36,6 @@ def check_checkpoint_args(checkpoint_args):
     """Ensure fixed arguments for a model are the same for the input
     arguments and the one retrieved from checkpoint."""
     args = get_args()
-
     def _compare(arg_name, old_arg_name=None, default=None):
         if old_arg_name is not None:
             ckpt_arg_name = old_arg_name
@@ -171,7 +170,7 @@ def get_checkpoint_tracker_filename(checkpoints_path):
     return os.path.join(checkpoints_path, 'latest_checkpointed_iteration.txt')
 
 
-def read_metadata(tracker_filename):
+def read_metadata(tracker_filename, overwrite_iteration=None):
     # Read the tracker file and either set the iteration or
     # mark it as a release checkpoint.
     iteration = 0
@@ -180,6 +179,9 @@ def read_metadata(tracker_filename):
         metastring = f.read().strip()
         try:
             iteration = int(metastring)
+            if overwrite_iteration is not None:
+                iteration = int(overwrite_iteration)
+                print(f"Overwriting iteration to {iteration}")
         except ValueError:
             release = metastring == 'release'
             if not release:
@@ -383,7 +385,7 @@ def fix_query_key_value_ordering(model, checkpoint_version):
                      " checkpoint version {}".format(checkpoint_version))
 
 
-def _load_base_checkpoint(load_dir, rank0=False):
+def _load_base_checkpoint(load_dir, rank0=False, overwrite_iteration=None):
     """ Load the base state_dict from the given directory
 
     If rank0 is true, just loads rank 0 checkpoint, ignoring arguments.
@@ -403,7 +405,7 @@ def _load_base_checkpoint(load_dir, rank0=False):
 
     # Otherwise, read the tracker file and either set the iteration or
     # mark it as a release checkpoint.
-    iteration, release = read_metadata(tracker_filename)
+    iteration, release = read_metadata(tracker_filename, overwrite_iteration)
 
     # Checkpoint.
     if rank0:
@@ -418,6 +420,7 @@ def _load_base_checkpoint(load_dir, rank0=False):
     # Load the checkpoint.
     try:
         state_dict = torch.load(checkpoint_name, map_location='cpu')
+        print_rank_0(f"[debug] loaded {checkpoint_name} at iteration {iteration}")
     except ModuleNotFoundError:
         from megatron.fp16_deprecated import loss_scaler
         # For backward compatibility.
@@ -452,12 +455,13 @@ def load_args_from_checkpoint(args, load_arg='load'):
 
     """
     load_dir = getattr(args, load_arg)
+    overwrite_iteration = getattr(args, 'overwrite_iteration', None)
 
     if load_dir is None:
         print_rank_0('No load directory specified, using provided arguments.')
         return args
 
-    state_dict, checkpoint_name, release = _load_base_checkpoint(load_dir, rank0=True)
+    state_dict, checkpoint_name, release = _load_base_checkpoint(load_dir, rank0=True, overwrite_iteration=overwrite_iteration)
 
     # Args.
     if not state_dict:
@@ -469,6 +473,7 @@ def load_args_from_checkpoint(args, load_arg='load'):
         return args
 
     checkpoint_args = state_dict['args']
+    print(checkpoint_args)
     checkpoint_version = state_dict.get('checkpoint_version', 0)
     args.iteration = state_dict['iteration']
 
@@ -530,10 +535,11 @@ def load_checkpoint(model, optimizer, opt_param_scheduler, load_arg='load', stri
     """
     args = get_args()
     load_dir = getattr(args, load_arg)
+    overwrite_iteration = getattr(args, 'overwrite_iteration', None)
 
     model = unwrap_model(model)
 
-    state_dict, checkpoint_name, release = _load_base_checkpoint(load_dir, rank0=False)
+    state_dict, checkpoint_name, release = _load_base_checkpoint(load_dir, rank0=False, overwrite_iteration=overwrite_iteration)
 
     # Checkpoint not loaded.
     if state_dict is None:

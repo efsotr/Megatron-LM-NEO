@@ -13,7 +13,7 @@ class OptimizerParamScheduler(object):
                  lr_warmup_steps, lr_decay_steps, lr_decay_style,
                  start_wd, end_wd, wd_incr_steps, wd_incr_style,
                  use_checkpoint_opt_param_scheduler=True,
-                 override_opt_param_scheduler=False):
+                 override_opt_param_scheduler=False, wsd_decay_ratio=0.1, wsd_half_life=-1, lr_stable_steps=-1):
 
         # Class values.
         self.optimizer = optimizer
@@ -45,6 +45,12 @@ class OptimizerParamScheduler(object):
         if self.override_opt_param_scheduler:
             assert not self.use_checkpoint_opt_param_scheduler, 'both override and '\
                 'use-checkpoint are set.'
+        
+        self.wsd_decay_ratio = wsd_decay_ratio
+        assert self.wsd_decay_ratio > 0.0
+        assert self.wsd_decay_ratio <= 1.0
+        self.wsd_half_life = wsd_half_life
+        self.lr_stable_steps = lr_stable_steps
 
         # Set the learning rate
         self.step(0)
@@ -106,6 +112,28 @@ class OptimizerParamScheduler(object):
             lr = self.max_lr * warmup_steps ** 0.5 / (num_steps ** 0.5)
             return max(self.min_lr, lr)
 
+        if self.lr_decay_style == 'wsd':
+            if self.lr_stable_steps == -1:
+                self.lr_stable_steps = int(self.lr_decay_steps / (1 + self.wsd_decay_ratio))
+            elif self.lr_stable_steps == -2:
+                self.lr_stable_steps = self.lr_decay_steps
+            assert self.lr_stable_steps <= self.lr_decay_steps
+            if self.wsd_half_life == -1:
+                self.wsd_half_life = 0.5 * (self.lr_decay_steps - self.lr_stable_steps) + 1
+            assert self.wsd_half_life > 0
+            if self.lr_stable_steps < self.lr_decay_steps:
+                assert self.wsd_half_life < self.lr_decay_steps - self.lr_stable_steps
+            # print(f"self.lr_stable_steps: ", self.lr_stable_steps, "self.decay_steps: ", self.lr_decay_steps)
+            if self.num_steps <= self.lr_stable_steps:
+                lr = self.max_lr
+                # print(f"iter: {self.num_steps}, lr: {max(self.min_lr, lr)}, half_life: {self.wsd_half_life}, max_lr: {self.max_lr}, stable_steps: {self.lr_stable_steps}, decay_ratio: {self.wsd_decay_ratio}")
+            elif self.num_steps <= self.lr_decay_steps:
+                decayed = 0.5 ** ((self.num_steps - self.lr_stable_steps) / self.wsd_half_life)
+                lr = self.max_lr * decayed
+                # print(f"iter: {self.num_steps}, lr: {max(self.min_lr, lr)}, half_life: {self.wsd_half_life}, decayed: {decayed}, max_lr: {self.max_lr}, stable_steps: {self.lr_stable_steps}, decay_ratio: {self.wsd_decay_ratio}")
+
+            return max(self.min_lr, lr)
+
         num_steps_ = self.num_steps - self.lr_warmup_steps
         decay_steps_ = self.lr_decay_steps - self.lr_warmup_steps
         decay_ratio = float(num_steps_) / float(decay_steps_)
@@ -145,7 +173,10 @@ class OptimizerParamScheduler(object):
             'start_wd': self.start_wd,
             'end_wd': self.end_wd,
             'wd_incr_style': self.wd_incr_style,
-            'wd_incr_steps': self.wd_incr_steps
+            'wd_incr_steps': self.wd_incr_steps,
+            'wsd_decay_ratio': self.wsd_decay_ratio,
+            'wsd_half_life': self.wsd_half_life,
+            'lr_stable_steps': self.lr_stable_steps
         }
         return state_dict
 
