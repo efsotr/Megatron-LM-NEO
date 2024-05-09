@@ -1,3 +1,16 @@
+# Megatron-LM-NEO
+
+This repository contains training scripts for Megatron-LM-NEO, forked from [Megatron-LM](https://github.com/NVIDIA/Megatron-LM). We have made the following modifications:
+
+1. Fixed data overflow bugs when handling large amounts of data with the Megatron-LM Dataset.
+2. Integrated the Wandb API into the code.
+3. Provided support for converting Megatron-core checkpoints to Huggingface format.
+4. Added document shuffle arguments to bitwise reproduce the data shuffle training progress.
+
+For the further usage of Megatron-LM-NEO, please refer to the folder 'neo'
+
+# Megatron-LM
+
 Megatron ([1](https://arxiv.org/pdf/1909.08053.pdf), [2](https://arxiv.org/pdf/2104.04473.pdf), and [3](https://arxiv.org/pdf/2205.05198)) is a large, powerful transformer developed by the Applied Deep Learning Research team at NVIDIA. This repository is for ongoing research related to training large transformer language models at scale. We developed efficient, model-parallel ([tensor](https://arxiv.org/pdf/1909.08053.pdf), [sequence](https://arxiv.org/pdf/2205.05198), and [pipeline](https://arxiv.org/pdf/2104.04473.pdf)), and multi-node pre-training of transformer based models such as [GPT](https://arxiv.org/abs/2005.14165), [BERT](https://arxiv.org/pdf/1810.04805.pdf), and [T5](https://arxiv.org/abs/1910.10683) using mixed precision.
 
 Below are some of the projects where we have directly used Megatron:
