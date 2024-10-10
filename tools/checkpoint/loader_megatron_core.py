@@ -4,7 +4,7 @@ import json
 import os
 import sys
 import types
-sys.path.append("/workspace/megatron")
+sys.path.append("/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO")
 import torch
 
 
@@ -41,9 +41,10 @@ def _load_checkpoint(queue, args):
                 _EXPERT_PARALLEL_RNG_TRACKER_NAME, _MODEL_PARALLEL_RNG_TRACKER_NAME
             )
     except ModuleNotFoundError:
-        print("Unable to import Megatron, please specify the path to Megatron using --megatron-path. Exiting.")
-        queue.put("exit")
-        exit(1)
+        # print("Unable to import Megatron, please specify the path to Megatron using --megatron-path. Exiting.")
+        # queue.put("exit")
+        # exit(1)
+        raise
 
     # check whether the last folder name of args.load_dir is 'checkpoint' or 'iter_*'
     if args.load_dir.endswith('/'):

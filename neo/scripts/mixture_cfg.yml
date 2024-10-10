@@ -1,13 +1,36 @@
 GLOBAL_BATCH_SIZE: 1024
 SEQ_LEN: 8192
 
+# /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_01_text_document
+
+
+
+
+0.9_ROUND:
+  - /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_01_text_document.bin
+
 0.5_ROUND:
-  - /workspace/dataset/example/mmap/example_text_document.bin
+  - /data/public_models/huggingface/matrix/tmp/rr_code_code.000_text_document.bin
 
 1_ROUND:
-  - /workspace/dataset/example/mmap/example_text_document.bin
+  - /data/public_models/huggingface/matrix/tmp/rr_exam_math_text_document.bin
 
-2_ROUND:
-  - /workspace/dataset/example/mmap/example_text_document.bin
+0.99_ROUND:
+  - /data/public_models/huggingface/matrix/tmp/rr_paper_math.000_text_document.bin
+
+0.6_ROUND:
+  - /data/public_models/huggingface/matrix/tmp/rr_code_code.002_text_document.bin
+
+0.999_ROUND:
+  - /data/public_models/huggingface/matrix/tmp/rr_cc_math.000_text_document.bin
+
+0.1_ROUND:
+  - /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_02_text_document.bin
+
+# 1_ROUND:
+#   - /data/public_models/huggingface/matrix/tmp/book_all_text_document.bin
+
+# 2_ROUND:
+#   - /workspace/dataset/example/mmap/example_text_document.bin
 
 

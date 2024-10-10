@@ -9,8 +9,21 @@ import os
 import argparse
 import yaml
 
+# /data/public_models/huggingface/matrix/tmp/rr_code_code.000_text_document: 43902478081
+# /data/public_models/huggingface/matrix/tmp/rr_exam_math_text_document: 51337646588
+# /data/public_models/huggingface/matrix/tmp/rr_paper_math.000_text_document: 37748191563
+# /data/public_models/huggingface/matrix/tmp/rr_code_code.002_text_document: 43824673654
+# /data/public_models/huggingface/matrix/tmp/rr_cc_math.000_text_document: 14273576155
+# /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_02_text_document: 243270290008
+
 DB2TOKCNT = {
-    '/workspace/dataset/example/mmap/example_text_document.bin': 10000000,
+    '/data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_01_text_document.bin': 288703527565,
+    '/data/public_models/huggingface/matrix/tmp/rr_code_code.000_text_document.bin': 43902478081,
+    '/data/public_models/huggingface/matrix/tmp/rr_exam_math_text_document.bin': 51337646588,
+    '/data/public_models/huggingface/matrix/tmp/rr_paper_math.000_text_document.bin': 37748191563,
+    '/data/public_models/huggingface/matrix/tmp/rr_code_code.002_text_document.bin': 43824673654,
+    '/data/public_models/huggingface/matrix/tmp/rr_cc_math.000_text_document.bin': 14273576155,
+    '/data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_02_text_document.bin': 243270290008,
 }
 
 def parse_args():
@@ -38,11 +51,13 @@ def parse_mixture_from_cfg(cfg):
 
     def repeat_str(s, n):
         return "".join([s for _ in range(n)])
-
+    print(rounds)
     total_tokcnt = 0
     mixture_str = ""
     for r in rounds:
         repeat_times = float(r.replace("_ROUND", ""))
+        print(cfg[r])
+        print(set(cfg[r]))
         mmap_paths = sorted(set(cfg[r]))
         for mmap_path in mmap_paths:
             mmap_path_without_ext = os.path.splitext(mmap_path)[0]

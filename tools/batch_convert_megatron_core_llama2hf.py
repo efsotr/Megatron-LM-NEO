@@ -32,7 +32,7 @@ def convert_megatron2hf(megatron_dir, hf_dir, hf_tokenizer_dir, use_bf16_convert
         return success, duration
     
     try:
-        subprocess.run(cmd, shell=True, check=True, executable='/bin/bash')
+        subprocess.run(cmd, shell=True, check=True, executable='/usr/bin/bash')
         success = True
     except subprocess.CalledProcessError:
         success = False

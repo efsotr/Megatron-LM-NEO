@@ -86,21 +86,33 @@ class Encoder(object):
         ids = {}
         lens = {}
         for key in self.args.json_keys:
+            if key not in data:
+                continue
             text = data[key]
             if isinstance(text, list):
                 sentences = text
             else:
                 sentences = [text]
             doc_ids = []
+            # yxj changed here
+            doc_ids.append(Encoder.tokenizer.eod)
             sentence_lens = []
             for sentence in sentences:
                 sentence_ids = Encoder.tokenizer.tokenize(sentence)
                 if len(sentence_ids) > 0:
                     doc_ids.extend(sentence_ids)
                     sentence_lens.append(len(sentence_ids))
-            if len(doc_ids) > 0 and self.args.append_eod:
-                doc_ids.append(Encoder.tokenizer.eod)
-                sentence_lens[-1] += 1
+            # yxj changed here
+            if len(doc_ids) > 1 and self.args.append_eod:
+                sentence_lens[0] += 1
+            # if len(doc_ids) > 0 and self.args.append_eod:
+                # print('for reverse!!!')
+                # doc_ids.append(Encoder.tokenizer.eod)
+                # sentence_lens[0] += 1
+            # reverse the document and sentence lens
+            doc_ids.reverse()
+            sentence_lens.reverse()
+            
             ids[key] = doc_ids
             lens[key] = sentence_lens
         return ids, lens, len(json_line)
@@ -248,7 +260,10 @@ def get_args():
 
 def get_file_name(args, file_id):
     file_name, extension = os.path.splitext(args.input)
-    input_file_name = file_name + "_" + str(file_id) + extension
+    x = glob.glob(args.input)
+    x = sorted(x)
+    # input_file_name = file_name + "_" + str(file_id) + extension
+    input_file_name = x[file_id]
     sentence_split_file = file_name + "_ss_" + str(file_id) + extension
     output_prefix = args.output_prefix + "_" + str(file_id)
     file_names = {

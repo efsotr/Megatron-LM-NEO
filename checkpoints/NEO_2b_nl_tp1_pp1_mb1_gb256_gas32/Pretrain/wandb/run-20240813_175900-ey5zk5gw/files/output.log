@@ -1,0 +1,35 @@
+
+GPTDatasetConfig(is_built_on_rank=<function is_dataset_built_on_rank at 0x7b5b9c6063b0>, random_seed=42, sequence_length=8192, blend=None, blend_per_split=[['/data/public_models/huggingface/matrix/tmp/rr_cc_en.000_text_document'], None, None], split=None, split_matrix=None, path_to_cache='null', return_document_ids=False, reset_position_ids=False, reset_attention_mask=False, eod_mask_loss=True, eod_id=64002, add_bos=False, enable_shuffle=False)
+(min, max) time across ranks (ms):
+    model-and-optimizer-setup ......................: (344.64, 355.50)
+    train/valid/test-data-iterators-setup ..........: (6430.39, 11953.82)
+/data/xunjian_yin/miniconda3/envs/apex1/lib/python3.10/site-packages/torch/distributed/c10d_logger.py:79: FutureWarning: `torch.distributed._all_gather_base` is a private function and will be deprecated. Please use `torch.distributed.all_gather_into_tensor` instead.
+  return func(*args, **kwargs)
+/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/core/distributed/grad_buffer.py:104: FutureWarning: `torch.distributed._reduce_scatter_base` is a private function and will be deprecated. Please use `torch.distributed.reduce_scatter_tensor` instead.
+  self.communication_handle = torch.distributed._reduce_scatter_base(
+ iteration        1/   12151 | consumed samples:          256 | elapsed time per iteration (ms): 35751.3 | learning rate: 1.000E-07 | global batch size:   256 | lm loss: 1.146703E+01 | loss scale: 1.0 | grad norm: 10.590 | number of skipped iterations:   0 | number of nan iterations:   0 |
+/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/training.py:533: UserWarning: The torch.cuda.*DtypeTensor constructors are no longer recommended. It's best to use methods such as torch.tensor(data, dtype=*, device='cuda') to create tensors. (Triggered internally at /opt/conda/conda-bld/pytorch_1720538438429/work/torch/csrc/tensor/python_tensor.cpp:78.)
+  key, torch.cuda.FloatTensor([0.0])) + loss_dict[key]
+ iteration        2/   12151 | consumed samples:          512 | elapsed time per iteration (ms): 23308.9 | learning rate: 2.000E-07 | global batch size:   256 | lm loss: 1.147063E+01 | loss scale: 1.0 | grad norm: 10.647 | number of skipped iterations:   0 | number of nan iterations:   0 |
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/neo/pretrain_gpt_neo.py", line 205, in <module>
+[rank7]:     pretrain(train_valid_test_datasets_provider,
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/training.py", line 182, in pretrain
+[rank7]:     iteration = train(forward_step_func,
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/training.py", line 843, in train
+[rank7]:     train_step(forward_step_func,
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/training.py", line 452, in train_step
+[rank7]:     losses_reduced = forward_backward_func(
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/core/pipeline_parallel/schedules.py", line 327, in forward_backward_no_pipelining
+[rank7]:     output_tensor = forward_step(
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/core/pipeline_parallel/schedules.py", line 191, in forward_step
+[rank7]:     output_tensor = loss_func(output_tensor)
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/neo/pretrain_gpt_neo.py", line 126, in loss_func
+[rank7]:     averaged_loss = average_losses_across_data_parallel_group([loss])
+[rank7]:   File "/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/megatron/utils.py", line 100, in average_losses_across_data_parallel_group
+[rank7]:     torch.distributed.all_reduce(averaged_losses,
+[rank7]:   File "/data/xunjian_yin/miniconda3/envs/apex1/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 79, in wrapper
+[rank7]:     return func(*args, **kwargs)
+[rank7]:   File "/data/xunjian_yin/miniconda3/envs/apex1/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2288, in all_reduce
+[rank7]:     work = group.allreduce([tensor], opts)
+[rank7]: KeyboardInterrupt

@@ -1,12 +1,14 @@
 VOCAB_SIZE: 64005
 TOKENIZER_DIR: neo/scripts/tokenizer.model
-MEGATRON_CHECKPOINT_PATH: /workspace/checkpoints
-HF_CHECKPOINT_PATH: /workspace/hf_ckpt
+# MEGATRON_CHECKPOINT_PATH: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/checkpoints/NEO_2b_nl_tp1_pp1_mb1_gb1024_gas16/rPretrain2b/checkpoint
+# HF_CHECKPOINT_PATH: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/hf_checkpoints/2B
+MEGATRON_CHECKPOINT_PATH: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/checkpoints/NEO_7b_nl_tp2_pp1_mb1_gb1024_gas32/rPretrain7b/checkpoint/
+HF_CHECKPOINT_PATH: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/hf_checkpoints/7B
 SEQ_LEN: 8192
-GB: 640
+GB: 1024
 BF16: true
 
 # The batch conversion script will automatically find the checkpoint closest to the set value for conversion based on the following values you set. 
+#  - 10
 CKPTS_TO_KEEP_BY_BILLIONS_OF_TOKENS:
-  - 10
-  - 10000
+  - 1000000

@@ -155,12 +155,16 @@ def is_dataset_built_on_rank():
 
 
 def core_gpt_dataset_config_from_args(args):
+    def str2list_weight_prefixes(s):
+        if ',' not in s[0]:
+            return s
+        return s[0].split(',')
     return GPTDatasetConfig(
         is_built_on_rank=is_dataset_built_on_rank,
         random_seed=args.seed,
         sequence_length=args.seq_length,
         blend=args.data_path,
-        blend_per_split=[args.train_data_path, args.valid_data_path, args.test_data_path],
+        blend_per_split=[str2list_weight_prefixes(args.train_data_path), args.valid_data_path, args.test_data_path],
         split=args.split,
         path_to_cache=args.data_cache_path,
         return_document_ids=args.retro_return_doc_ids,

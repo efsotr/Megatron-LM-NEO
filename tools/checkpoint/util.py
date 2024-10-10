@@ -91,14 +91,20 @@ import sys
 def load_plugin(plugin_type, name):
     module_name = f"{plugin_type}_{name}"
     # plugin = importlib.import_module(module_name)
+    print(module_name)
+    print(name)
     try:
+        print(f'loading {module_name}')
+        sys.path.append('/data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/tools/checkpoint')
         plugin = importlib.import_module(module_name)
     except ModuleNotFoundError:
+        raise
         module_name = name
         try:
             plugin = importlib.import_module(module_name)
         except ModuleNotFoundError:
-            sys.exit(f"Unable to load {plugin_type} plugin {name}. Exiting.")
+            # sys.exit(f"Unable to load {plugin_type} plugin {name}. Exiting.")
+            raise
 
     if not hasattr(plugin, 'add_arguments'):
         sys.exit(f"{module_name} module is not a plugin. Exiting.")

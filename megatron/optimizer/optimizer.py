@@ -5,8 +5,8 @@
 from abc import ABC
 from abc import abstractmethod
 from apex.multi_tensor_apply import multi_tensor_applier
-import amp_C
 import torch
+import amp_C
 
 from megatron import get_timers
 from megatron import print_rank_0

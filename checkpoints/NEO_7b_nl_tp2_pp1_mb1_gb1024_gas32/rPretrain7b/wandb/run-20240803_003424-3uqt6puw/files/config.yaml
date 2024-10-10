@@ -1,0 +1,884 @@
+wandb_version: 1
+
+num_layers:
+  desc: null
+  value: 28
+encoder_num_layers:
+  desc: null
+  value: 28
+decoder_num_layers:
+  desc: null
+  value: null
+hidden_size:
+  desc: null
+  value: 3072
+ffn_hidden_size:
+  desc: null
+  value: 24576
+num_attention_heads:
+  desc: null
+  value: 16
+kv_channels:
+  desc: null
+  value: 192
+group_query_attention:
+  desc: null
+  value: true
+num_query_groups:
+  desc: null
+  value: 16
+max_position_embeddings:
+  desc: null
+  value: 8192
+position_embedding_type:
+  desc: null
+  value: rope
+use_rotary_position_embeddings:
+  desc: null
+  value: true
+rotary_percent:
+  desc: null
+  value: 1.0
+rotary_seq_len_interpolation_factor:
+  desc: null
+  value: null
+add_position_embedding:
+  desc: null
+  value: false
+make_vocab_size_divisible_by:
+  desc: null
+  value: 128
+normalization:
+  desc: null
+  value: RMSNorm
+norm_epsilon:
+  desc: null
+  value: 1.0e-05
+apply_layernorm_1p:
+  desc: null
+  value: false
+apply_residual_connection_post_layernorm:
+  desc: null
+  value: false
+openai_gelu:
+  desc: null
+  value: false
+squared_relu:
+  desc: null
+  value: false
+swiglu:
+  desc: null
+  value: true
+onnx_safe:
+  desc: null
+  value: null
+bert_binary_head:
+  desc: null
+  value: true
+num_experts:
+  desc: null
+  value: null
+moe_grouped_gemm:
+  desc: null
+  value: false
+untie_embeddings_and_output_weights:
+  desc: null
+  value: true
+attention_dropout:
+  desc: null
+  value: 0.0
+hidden_dropout:
+  desc: null
+  value: 0.0
+weight_decay:
+  desc: null
+  value: 0.1
+start_weight_decay:
+  desc: null
+  value: 0.1
+end_weight_decay:
+  desc: null
+  value: 0.1
+weight_decay_incr_style:
+  desc: null
+  value: constant
+clip_grad:
+  desc: null
+  value: 1.0
+adam_beta1:
+  desc: null
+  value: 0.9
+adam_beta2:
+  desc: null
+  value: 0.95
+adam_eps:
+  desc: null
+  value: 1.0e-08
+sgd_momentum:
+  desc: null
+  value: 0.9
+micro_batch_size:
+  desc: null
+  value: 1
+global_batch_size:
+  desc: null
+  value: 1024
+rampup_batch_size:
+  desc: null
+  value: null
+recompute_granularity:
+  desc: null
+  value: null
+check_for_nan_in_loss_and_grad:
+  desc: null
+  value: true
+distribute_saved_activations:
+  desc: null
+  value: false
+recompute_method:
+  desc: null
+  value: null
+recompute_num_layers:
+  desc: null
+  value: null
+clone_scatter_output_in_embedding:
+  desc: null
+  value: true
+profile:
+  desc: null
+  value: false
+profile_step_start:
+  desc: null
+  value: 10
+profile_step_end:
+  desc: null
+  value: 12
+profile_ranks:
+  desc: null
+  value:
+  - 0
+tp_comm_overlap:
+  desc: null
+  value: false
+tp_comm_overlap_cfg:
+  desc: null
+  value: null
+tp_comm_split_ag:
+  desc: null
+  value: true
+tp_comm_split_rs:
+  desc: null
+  value: true
+tp_comm_bulk_dgrad:
+  desc: null
+  value: true
+tp_comm_bulk_wgrad:
+  desc: null
+  value: true
+train_iters:
+  desc: null
+  value: 51900
+train_samples:
+  desc: null
+  value: null
+log_interval:
+  desc: null
+  value: 1
+exit_interval:
+  desc: null
+  value: 51900
+exit_duration_in_mins:
+  desc: null
+  value: null
+exit_signal_handler:
+  desc: null
+  value: false
+tensorboard_dir:
+  desc: null
+  value: null
+masked_softmax_fusion:
+  desc: null
+  value: true
+bias_gelu_fusion:
+  desc: null
+  value: false
+bias_dropout_fusion:
+  desc: null
+  value: true
+use_flash_attn:
+  desc: null
+  value: false
+add_bias_linear:
+  desc: null
+  value: false
+optimizer:
+  desc: null
+  value: adam
+dataloader_type:
+  desc: null
+  value: single
+async_tensor_model_parallel_allreduce:
+  desc: null
+  value: false
+no_persist_layer_norm:
+  desc: null
+  value: false
+sequence_parallel:
+  desc: null
+  value: true
+gradient_accumulation_fusion:
+  desc: null
+  value: true
+use_mcore_models:
+  desc: null
+  value: true
+manual_gc:
+  desc: null
+  value: false
+manual_gc_interval:
+  desc: null
+  value: 0
+manual_gc_eval:
+  desc: null
+  value: true
+seed:
+  desc: null
+  value: 42
+data_parallel_random_init:
+  desc: null
+  value: false
+init_method_std:
+  desc: null
+  value: 0.02
+init_method_xavier_uniform:
+  desc: null
+  value: false
+lr:
+  desc: null
+  value: 0.0002
+lr_decay_style:
+  desc: null
+  value: cosine
+lr_decay_iters:
+  desc: null
+  value: null
+lr_decay_samples:
+  desc: null
+  value: null
+lr_warmup_fraction:
+  desc: null
+  value: null
+lr_warmup_iters:
+  desc: null
+  value: 2000
+lr_warmup_samples:
+  desc: null
+  value: 0
+lr_warmup_init:
+  desc: null
+  value: 0.0
+min_lr:
+  desc: null
+  value: 2.0e-05
+override_opt_param_scheduler:
+  desc: null
+  value: true
+use_checkpoint_opt_param_scheduler:
+  desc: null
+  value: false
+wsd_decay_ratio:
+  desc: null
+  value: 0.1
+wsd_half_life:
+  desc: null
+  value: -1
+lr_stable_steps:
+  desc: null
+  value: -1
+save:
+  desc: null
+  value: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/checkpoints/NEO_7b_nl_tp2_pp1_mb1_gb1024_gas32/rPretrain7b/checkpoint/
+save_interval:
+  desc: null
+  value: 500
+no_save_optim:
+  desc: null
+  value: null
+no_save_rng:
+  desc: null
+  value: null
+load:
+  desc: null
+  value: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/checkpoints/NEO_7b_nl_tp2_pp1_mb1_gb1024_gas32/rPretrain7b/checkpoint/
+no_load_optim:
+  desc: null
+  value: null
+no_load_rng:
+  desc: null
+  value: null
+finetune:
+  desc: null
+  value: false
+perform_initialization:
+  desc: null
+  value: true
+use_checkpoint_args:
+  desc: null
+  value: false
+exit_on_missing_checkpoint:
+  desc: null
+  value: false
+overwrite_iteration:
+  desc: null
+  value: null
+fp16:
+  desc: null
+  value: false
+bf16:
+  desc: null
+  value: true
+loss_scale:
+  desc: null
+  value: null
+initial_loss_scale:
+  desc: null
+  value: 4294967296
+min_loss_scale:
+  desc: null
+  value: 1.0
+loss_scale_window:
+  desc: null
+  value: 1000
+hysteresis:
+  desc: null
+  value: 2
+fp32_residual_connection:
+  desc: null
+  value: false
+apply_query_key_layer_scaling:
+  desc: null
+  value: false
+attention_softmax_in_fp32:
+  desc: null
+  value: false
+accumulate_allreduce_grads_in_fp32:
+  desc: null
+  value: true
+fp16_lm_cross_entropy:
+  desc: null
+  value: false
+tensor_model_parallel_size:
+  desc: null
+  value: 2
+pipeline_model_parallel_size:
+  desc: null
+  value: 1
+pipeline_model_parallel_split_rank:
+  desc: null
+  value: null
+num_layers_per_virtual_pipeline_stage:
+  desc: null
+  value: null
+overlap_p2p_comm:
+  desc: null
+  value: false
+distributed_backend:
+  desc: null
+  value: nccl
+distributed_timeout_minutes:
+  desc: null
+  value: 10
+overlap_grad_reduce:
+  desc: null
+  value: false
+delay_grad_reduce:
+  desc: null
+  value: true
+overlap_param_gather:
+  desc: null
+  value: false
+delay_param_gather:
+  desc: null
+  value: false
+scatter_gather_tensors_in_pipeline:
+  desc: null
+  value: true
+use_ring_exchange_p2p:
+  desc: null
+  value: false
+local_rank:
+  desc: null
+  value: null
+lazy_mpu_init:
+  desc: null
+  value: null
+use_cpu_initialization:
+  desc: null
+  value: null
+empty_unused_memory_level:
+  desc: null
+  value: 0
+standalone_embedding_stage:
+  desc: null
+  value: false
+use_distributed_optimizer:
+  desc: null
+  value: true
+expert_model_parallel_size:
+  desc: null
+  value: 1
+context_parallel_size:
+  desc: null
+  value: 1
+nccl_communicator_config_path:
+  desc: null
+  value: null
+eval_iters:
+  desc: null
+  value: 0
+eval_interval:
+  desc: null
+  value: 1000000
+skip_train:
+  desc: null
+  value: false
+data_path:
+  desc: null
+  value: null
+split:
+  desc: null
+  value: 1000,0,0
+train_data_path:
+  desc: null
+  value:
+  - '259833174808'
+  - /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_01_text_document
+  - '21951239040'
+  - /data/public_models/huggingface/matrix/tmp/rr_code_code.000_text_document
+  - '51337646588'
+  - /data/public_models/huggingface/matrix/tmp/rr_exam_math_text_document
+  - '37370709647'
+  - /data/public_models/huggingface/matrix/tmp/rr_paper_math.000_text_document
+  - '26294804192'
+  - /data/public_models/huggingface/matrix/tmp/rr_code_code.002_text_document
+  - '14259302578'
+  - /data/public_models/huggingface/matrix/tmp/rr_cc_math.000_text_document
+  - '24327029000'
+  - /data/xunjian_yin/mycode/DCLM/dclm-b1/dclm_reverse/dclm_02_text_document
+valid_data_path:
+  desc: null
+  value: null
+test_data_path:
+  desc: null
+  value: null
+data_cache_path:
+  desc: null
+  value: 'null'
+vocab_size:
+  desc: null
+  value: 64005
+vocab_file:
+  desc: null
+  value: null
+merge_file:
+  desc: null
+  value: null
+vocab_extra_ids:
+  desc: null
+  value: 0
+seq_length:
+  desc: null
+  value: 8192
+encoder_seq_length:
+  desc: null
+  value: 8192
+decoder_seq_length:
+  desc: null
+  value: null
+retriever_seq_length:
+  desc: null
+  value: 256
+sample_rate:
+  desc: null
+  value: 1.0
+mask_prob:
+  desc: null
+  value: 0.15
+short_seq_prob:
+  desc: null
+  value: 0.1
+num_workers:
+  desc: null
+  value: 8
+tokenizer_type:
+  desc: null
+  value: SentencePieceTokenizer
+tokenizer_model:
+  desc: null
+  value: neo/tokenizer.model
+reset_position_ids:
+  desc: null
+  value: false
+reset_attention_mask:
+  desc: null
+  value: false
+eod_mask_loss:
+  desc: null
+  value: true
+adlr_autoresume:
+  desc: null
+  value: false
+adlr_autoresume_interval:
+  desc: null
+  value: 1000
+ict_head_size:
+  desc: null
+  value: null
+biencoder_projection_dim:
+  desc: null
+  value: 0
+biencoder_shared_query_context_model:
+  desc: null
+  value: false
+ict_load:
+  desc: null
+  value: null
+bert_load:
+  desc: null
+  value: null
+titles_data_path:
+  desc: null
+  value: null
+query_in_block_prob:
+  desc: null
+  value: 0.1
+use_one_sent_docs:
+  desc: null
+  value: false
+evidence_data_path:
+  desc: null
+  value: null
+retriever_report_topk_accuracies:
+  desc: null
+  value: []
+retriever_score_scaling:
+  desc: null
+  value: false
+block_data_path:
+  desc: null
+  value: null
+embedding_path:
+  desc: null
+  value: null
+indexer_batch_size:
+  desc: null
+  value: 128
+indexer_log_interval:
+  desc: null
+  value: 1000
+num_classes:
+  desc: null
+  value: 1000
+img_h:
+  desc: null
+  value: 224
+img_w:
+  desc: null
+  value: 224
+num_channels:
+  desc: null
+  value: 3
+patch_dim:
+  desc: null
+  value: 16
+classes_fraction:
+  desc: null
+  value: 1.0
+data_per_class_fraction:
+  desc: null
+  value: 1.0
+data_sharding:
+  desc: null
+  value: true
+head_lr_mult:
+  desc: null
+  value: 1.0
+vision_pretraining:
+  desc: null
+  value: false
+vision_pretraining_type:
+  desc: null
+  value: classify
+vision_backbone_type:
+  desc: null
+  value: vit
+swin_backbone_type:
+  desc: null
+  value: tiny
+mask_type:
+  desc: null
+  value: random
+mask_factor:
+  desc: null
+  value: 1.0
+iter_per_epoch:
+  desc: null
+  value: 1250
+dino_local_img_size:
+  desc: null
+  value: 96
+dino_local_crops_number:
+  desc: null
+  value: 10
+dino_head_hidden_size:
+  desc: null
+  value: 2048
+dino_bottleneck_size:
+  desc: null
+  value: 256
+dino_freeze_last_layer:
+  desc: null
+  value: 1
+dino_norm_last_layer:
+  desc: null
+  value: false
+dino_warmup_teacher_temp:
+  desc: null
+  value: 0.04
+dino_teacher_temp:
+  desc: null
+  value: 0.07
+dino_warmup_teacher_temp_epochs:
+  desc: null
+  value: 30
+log_params_norm:
+  desc: null
+  value: false
+log_num_zeros_in_grad:
+  desc: null
+  value: false
+log_throughput:
+  desc: null
+  value: false
+timing_log_level:
+  desc: null
+  value: 0
+barrier_with_L1_time:
+  desc: null
+  value: true
+timing_log_option:
+  desc: null
+  value: minmax
+tensorboard_log_interval:
+  desc: null
+  value: 1
+tensorboard_queue_size:
+  desc: null
+  value: 1000
+log_timers_to_tensorboard:
+  desc: null
+  value: false
+log_batch_size_to_tensorboard:
+  desc: null
+  value: false
+log_learning_rate_to_tensorboard:
+  desc: null
+  value: true
+log_loss_scale_to_tensorboard:
+  desc: null
+  value: true
+log_validation_ppl_to_tensorboard:
+  desc: null
+  value: false
+log_memory_to_tensorboard:
+  desc: null
+  value: false
+log_world_size_to_tensorboard:
+  desc: null
+  value: false
+wandb_project:
+  desc: null
+  value: neo_test
+wandb_exp_name:
+  desc: null
+  value: rPretrain7b_NEO_7b_nl_tp2_pp1_mb1_gb1024_gas32
+wandb_save_dir:
+  desc: null
+  value: /data/xunjian_yin/mycode/MAP-NEO/Megatron-LM-NEO/checkpoints/NEO_7b_nl_tp2_pp1_mb1_gb1024_gas32/rPretrain7b/
+inference_batch_times_seqlen_threshold:
+  desc: null
+  value: 512
+max_tokens_to_oom:
+  desc: null
+  value: 12000
+output_bert_embeddings:
+  desc: null
+  value: false
+bert_embedder_type:
+  desc: null
+  value: megatron
+fp8:
+  desc: null
+  value: null
+fp8_margin:
+  desc: null
+  value: 0
+fp8_interval:
+  desc: null
+  value: 1
+fp8_amax_history_len:
+  desc: null
+  value: 1
+fp8_amax_compute_algo:
+  desc: null
+  value: most_recent
+fp8_wgrad:
+  desc: null
+  value: true
+transformer_impl:
+  desc: null
+  value: local
+retro_workdir:
+  desc: null
+  value: null
+retro_add_retriever:
+  desc: null
+  value: false
+retro_cyclic_train_iters:
+  desc: null
+  value: null
+retro_encoder_layers:
+  desc: null
+  value: 2
+retro_encoder_hidden_dropout:
+  desc: null
+  value: 0.1
+retro_encoder_attention_dropout:
+  desc: null
+  value: 0.1
+retro_num_neighbors:
+  desc: null
+  value: 2
+retro_num_retrieved_chunks:
+  desc: null
+  value: 2
+retro_return_doc_ids:
+  desc: null
+  value: false
+retro_attention_gate:
+  desc: null
+  value: 1
+retro_verify_neighbor_count:
+  desc: null
+  value: true
+spec:
+  desc: null
+  value: null
+enable_shuffle:
+  desc: null
+  value: false
+rank:
+  desc: null
+  value: 63
+world_size:
+  desc: null
+  value: 64
+transformer_pipeline_model_parallel_size:
+  desc: null
+  value: 1
+data_parallel_size:
+  desc: null
+  value: 32
+virtual_pipeline_model_parallel_size:
+  desc: null
+  value: null
+params_dtype:
+  desc: null
+  value: torch.bfloat16
+consumed_train_samples:
+  desc: null
+  value: 0
+consumed_valid_samples:
+  desc: null
+  value: 0
+variable_seq_lengths:
+  desc: null
+  value: false
+padded_vocab_size:
+  desc: null
+  value: 64256
+_wandb:
+  desc: null
+  value:
+    python_version: 3.8.19
+    cli_version: 0.17.5
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1722645264
+    t:
+      1:
+      - 1
+      - 41
+      - 55
+      2:
+      - 1
+      - 41
+      - 55
+      3:
+      - 7
+      - 13
+      - 16
+      - 23
+      4: 3.8.19
+      5: 0.17.5
+      8:
+      - 5
+      13: linux-x86_64
+    m:
+    - 1: train/global_step
+      6:
+      - 3
+    - 1: train vs tokens/consumed_train_tokens
+      6:
+      - 3
+    - 1: runtime/iteration_time
+      5: 1
+      6:
+      - 1
+    - 1: runtime/tflops_per_sec_per_gpu
+      5: 1
+      6:
+      - 1
+    - 1: runtime/tflops_per_sec
+      5: 1
+      6:
+      - 1
+    - 1: runtime/samples_per_sec_per_gpu
+      5: 1
+      6:
+      - 1
+    - 1: runtime/tokens_per_sec_per_gpu
+      5: 1
+      6:
+      - 1
+    - 1: train/loss
+      5: 1
+      6:
+      - 1
+    - 1: train/learning_rate
+      5: 1
+      6:
+      - 1
+    - 1: train vs tokens/loss
+      5: 2
+      6:
+      - 1
+    - 1: train vs tokens/learning_rate
+      5: 2
+      6:
+      - 1
+    - 1: train/total_grad_norm
+      5: 1
+      6:
+      - 1
