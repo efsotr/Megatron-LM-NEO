@@ -3,7 +3,10 @@
 import torch
 from torch import nn
 
-class RMSNorm(torch.nn.Module):
+from .optimized_module.layer_norm import EffRMSNorm
+print("use eff norm")
+
+class RMSNorm(EffRMSNorm):
 
     def __init__(self,
                  dim: int,
@@ -17,15 +20,15 @@ class RMSNorm(torch.nn.Module):
             sequence_parallel (bool): Set to true if sequence parallelism is being used,
               this marks the weights as needing to be allreduced.
         """
-        super().__init__()
-        self.eps = eps
-        self.weight = nn.Parameter(torch.ones(dim))
+        super().__init__(dim, eps)
+        # self.eps = eps
+        # self.weight = nn.Parameter(torch.ones(dim))
 
         setattr(self.weight, 'sequence_parallel', sequence_parallel)
 
-    def _norm(self, x):
-        return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
+    # def _norm(self, x):
+    #     return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
 
-    def forward(self, x):
-        output = self._norm(x.float()).type_as(x)
-        return output * self.weight
+    # def forward(self, x):
+    #     output = self._norm(x.float()).type_as(x)
+    #     return output * self.weight

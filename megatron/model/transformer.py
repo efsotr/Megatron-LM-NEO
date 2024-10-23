@@ -115,9 +115,12 @@ class ParallelMLP(MegatronModule):
         elif args.onnx_safe:
             self.activation_func = erf_gelu
         elif args.swiglu:
+            from .optimized_module.activation import swiglu_wrc_func
+            print("use eff swiglu")
             def swiglu(x):
                 x = torch.chunk(x, 2, dim=-1)
-                return F.silu(x[0]) * x[1]
+                # return F.silu(x[0]) * x[1]
+                return swiglu_wrc_func(x[0], x[1])
             self.activation_func = swiglu
         elif args.squared_relu:
             def squared_relu(x):
