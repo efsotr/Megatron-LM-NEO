@@ -348,6 +348,8 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
         self.index = None
         self.bin_buffer = None
         self.bin_buffer_mmap = None
+        self.reverse = os.getenv("REVERSE_DATA", "0") == "1"
+        logger.info(f"REVERSE_DATA {self.reverse}")
 
         self.initialize(path_prefix, multimodal)
 
@@ -426,6 +428,8 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
                 count=sequence_length,
                 offset=sequence_pointer,
             )
+            if self.reverse:
+                sequence = sequence[::-1]
             return (sequence, sequence_mode) if sequence_mode is not None else sequence
         elif isinstance(idx, slice):
             start, stop, step = idx.indices(len(self))
@@ -443,6 +447,9 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
                 ),
                 sequence_offsets[:-1],
             )
+            if self.reverse:
+                for i in range(len(sequences)):
+                    sequences[i] = sequences[i][::-1]
             return (sequences, sequence_modes) if sequence_modes is not None else sequences
         else:
             raise TypeError("Unexpected type received for idx: {}".format(type(idx)))
