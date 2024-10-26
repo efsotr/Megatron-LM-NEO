@@ -128,7 +128,7 @@ class ParallelMLP(MegatronModule):
             def swiglu(x):
                 x = torch.chunk(x, 2, dim=-1)
                 # return F.silu(x[0]) * x[1]
-                return swiglu_wrc_func(x[0], x[1])
+                return self.swiglu_wrc_func(x[0], x[1])
             self.activation_func = swiglu
         elif args.squared_relu:
             def squared_relu(x):
