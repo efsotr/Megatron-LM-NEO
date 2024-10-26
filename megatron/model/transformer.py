@@ -26,6 +26,9 @@ from megatron.core.tensor_parallel import (
 )
 from megatron.core.parallel_state import get_tensor_model_parallel_group, get_tensor_and_expert_parallel_group
 
+import logging
+logger = logging.getLogger(__name__)
+
 try:
     from einops import rearrange
 except ImportError:
@@ -88,7 +91,7 @@ class ParallelMLP(MegatronModule):
         super(ParallelMLP, self).__init__()
         args = get_args()
 
-        print("enter in ParallelMLP", flush=True)
+        logger.info("enter in ParallelMLP")
 
         self.add_bias = config.add_bias_linear
 
@@ -112,7 +115,7 @@ class ParallelMLP(MegatronModule):
         self.activation_func = None
         self.swiglu = args.swiglu
 
-        print("args.swiglu", args.swiglu, flush=True)
+        logger.info(f"args.swiglu {args.swiglu}")
 
         if args.openai_gelu:
             self.activation_func = openai_gelu
@@ -120,7 +123,7 @@ class ParallelMLP(MegatronModule):
             self.activation_func = erf_gelu
         elif args.swiglu:
             from .optimized_module.activation import swiglu_wrc_func
-            print("use eff swiglu", flush=True)
+            logger.info("use eff swiglu")
             def swiglu(x):
                 x = torch.chunk(x, 2, dim=-1)
                 # return F.silu(x[0]) * x[1]
@@ -509,7 +512,7 @@ class ParallelAttention(MegatronModule):
                  attention_type=AttnType.self_attn,
                  attn_mask_type=AttnMaskType.padding):
         super(ParallelAttention, self).__init__()
-        print("enter in ParallelAttention", flush=True)
+        logger.info("enter in ParallelAttention")
         args = get_args()
         self.layer_number = max(1, layer_number)
         self.attention_type = attention_type
@@ -529,8 +532,9 @@ class ParallelAttention(MegatronModule):
         self.use_flash_attn = args.use_flash_attn \
             and attention_type == AttnType.self_attn \
             and self.attn_mask_type == AttnMaskType.causal
+        logger.info(f"use self.use_flash_attn {self.use_flash_attn}")
         if self.use_flash_attn:
-            print("use flash_attn is actually True", flush=True)
+            logger.info("use flash_attn is actually True")
             if flash_attn_unpadded_func is None:
                 raise ImportError('FlashAttention is not installed, please install with '
                                   'pip install flash-attn')
@@ -541,7 +545,7 @@ class ParallelAttention(MegatronModule):
             if rearrange is None:
                 raise ImportError('einops is not installed, please install with pip install einops')
         else:
-            print("use flash_attn is actually False", flush=True)
+            logger.info("use flash_attn is actually False")
 
         # Per attention head and per partition values.
         world_size = mpu.get_tensor_model_parallel_world_size()
@@ -870,7 +874,7 @@ class ParallelTransformerLayer(MegatronModule):
                  drop_path_rate=0.):
         args = get_args()
 
-        print("enter in ParallelTransformerLayer", flush=True)
+        logger.info("enter in ParallelTransformerLayer")
 
         super(ParallelTransformerLayer, self).__init__()
         self.layer_number = layer_number
@@ -898,7 +902,7 @@ class ParallelTransformerLayer(MegatronModule):
         # Normalize the attention output
         self.post_attention_norm = get_norm(config)
 
-        print("self.layer_type", self.layer_type, flush=True)
+        logger.info(f"self.layer_type {self.layer_type}")
         # Cross attention.
         if self.layer_type in (LayerType.decoder,
                                LayerType.retro_decoder,
@@ -1422,7 +1426,7 @@ class ParallelTransformer(MegatronModule):
 
         self.sequence_parallel = config.sequence_parallel
 
-        print("transformer_impl", self.transformer_impl, flush=True)
+        logger.info(f"transformer_impl {self.transformer_impl}")
 
         # Transformer Engine Init.
         self.transformer_engine_v_0_10 = False

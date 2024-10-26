@@ -5,6 +5,9 @@ from torch import nn
 
 from .optimized_module.layer_norm import EffRMSNorm
 
+import logging
+logger = logging.getLogger(__name__)
+
 class RMSNorm(EffRMSNorm):
 
     def __init__(self,
@@ -23,7 +26,7 @@ class RMSNorm(EffRMSNorm):
         # self.eps = eps
         # self.weight = nn.Parameter(torch.ones(dim))
 
-        print("use rms_norm", flush=True)
+        logger.info("use rms_norm")
         setattr(self.weight, 'sequence_parallel', sequence_parallel)
 
     # def _norm(self, x):
