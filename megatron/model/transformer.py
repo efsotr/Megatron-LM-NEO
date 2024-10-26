@@ -124,6 +124,7 @@ class ParallelMLP(MegatronModule):
         elif args.swiglu:
             from .optimized_module.activation import swiglu_wrc_func
             logger.info("use eff swiglu")
+            self.swiglu_wrc_func = swiglu_wrc_func()
             def swiglu(x):
                 x = torch.chunk(x, 2, dim=-1)
                 # return F.silu(x[0]) * x[1]
