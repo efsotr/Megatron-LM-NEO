@@ -4,7 +4,6 @@ import torch
 from torch import nn
 
 from .optimized_module.layer_norm import EffRMSNorm
-print("use eff norm")
 
 class RMSNorm(EffRMSNorm):
 
@@ -24,6 +23,7 @@ class RMSNorm(EffRMSNorm):
         # self.eps = eps
         # self.weight = nn.Parameter(torch.ones(dim))
 
+        print("use rms_norm", flush=True)
         setattr(self.weight, 'sequence_parallel', sequence_parallel)
 
     # def _norm(self, x):
