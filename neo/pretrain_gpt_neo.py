@@ -29,6 +29,8 @@ from megatron.arguments import core_transformer_config_from_args
 from megatron.core.models.gpt.gpt_layer_specs import get_gpt_layer_with_transformer_engine_spec
 from neo.arguments import add_neo_args 
 
+import logging
+logger = logging.getLogger(__name__)
 
 def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megatron.model.GPTModel]:
     """Builds the model.
@@ -48,6 +50,7 @@ def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megat
     print_rank_0('building GPT model ...')
     config = core_transformer_config_from_args(get_args())
 
+    logger.info(f"args.use_mcore_models {args.use_mcore_models}")
     if args.use_mcore_models:
         if args.spec is not None:
             transformer_layer_spec = import_module(args.spec)
@@ -78,6 +81,7 @@ def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megat
             post_process=post_process
         )
 
+    logger.info(f"MODEL: {repr(model)}")
     return model
 
 
