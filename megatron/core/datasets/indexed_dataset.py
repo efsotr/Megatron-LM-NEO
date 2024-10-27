@@ -434,7 +434,7 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
                 if self.first_log > 0:
                     from megatron import get_tokenizer
                     tokenizer = get_tokenizer()
-                    logger.info(f"seq {idx}: {tokenizer.detokenize(sequence)}")
+                    logger.info(f"seq {idx}: {tokenizer.detokenize(sequence.tolist())}")
                     self.first_log -= 1
             return (sequence, sequence_mode) if sequence_mode is not None else sequence
         elif isinstance(idx, slice):
@@ -459,7 +459,7 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
                     if self.first_log > 0:
                         from megatron import get_tokenizer
                         tokenizer = get_tokenizer()
-                        logger.info(f"seq {idx}: {tokenizer.detokenize(sequences[i])}")
+                        logger.info(f"seq {idx}: {tokenizer.detokenize(sequences[i].tolist())}")
                         self.first_log -= 1
             return (sequences, sequence_modes) if sequence_modes is not None else sequences
         else:
@@ -483,7 +483,7 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
             if self.first_log > 0:
                 from megatron import get_tokenizer
                 tokenizer = get_tokenizer()
-                logger.info(f"seq {idx}: {tokenizer.detokenize(sequence)}")
+                logger.info(f"seq {idx}: {tokenizer.detokenize(sequence.tolist())}")
                 self.first_log -= 1
         return (sequence, sequence_mode) if sequence_mode is not None else sequence
 
