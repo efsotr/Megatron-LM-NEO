@@ -349,6 +349,7 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
         self.bin_buffer = None
         self.bin_buffer_mmap = None
         self.reverse = os.getenv("REVERSE_DATA", "0") == "1"
+        self.first_log = 3
         logger.info(f"REVERSE_DATA {self.reverse}")
 
         self.initialize(path_prefix, multimodal)
@@ -430,6 +431,11 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
             )
             if self.reverse:
                 sequence = sequence[::-1]
+                if self.first_log > 0:
+                    from megatron import get_tokenizer
+                    tokenizer = get_tokenizer()
+                    logger.info(f"seq {idx}: {tokenizer.decode(sequence)}")
+                    self.first_log -= 1
             return (sequence, sequence_mode) if sequence_mode is not None else sequence
         elif isinstance(idx, slice):
             start, stop, step = idx.indices(len(self))
@@ -450,6 +456,11 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
             if self.reverse:
                 for i in range(len(sequences)):
                     sequences[i] = sequences[i][::-1]
+                    if self.first_log > 0:
+                        from megatron import get_tokenizer
+                        tokenizer = get_tokenizer()
+                        logger.info(f"seq {idx}: {tokenizer.decode(sequences[i])}")
+                        self.first_log -= 1
             return (sequences, sequence_modes) if sequence_modes is not None else sequences
         else:
             raise TypeError("Unexpected type received for idx: {}".format(type(idx)))
