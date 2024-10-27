@@ -478,6 +478,13 @@ class MMapIndexedDataset(torch.utils.data.Dataset):
         sequence = numpy.frombuffer(
             self.bin_buffer, dtype=self.index.dtype, count=length, offset=sequence_pointer
         )
+        if self.reverse:
+            sequence = sequence[::-1]
+            if self.first_log > 0:
+                from megatron import get_tokenizer
+                tokenizer = get_tokenizer()
+                logger.info(f"seq {idx}: {tokenizer.decode(sequence)}")
+                self.first_log -= 1
         return (sequence, sequence_mode) if sequence_mode is not None else sequence
 
     @property
